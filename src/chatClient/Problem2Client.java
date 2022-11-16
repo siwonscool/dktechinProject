@@ -20,7 +20,7 @@ public class Problem2Client extends Application {
     TextArea textArea;
 
     //문제2 Client 를 식별하기위한 문자열
-    String userName = Clients.문제2.name();
+    String clientId = Clients.문제2.name();
 
     public void startClient(String ip, int port){
         Thread thread = new Thread(){
@@ -113,7 +113,7 @@ public class Problem2Client extends Application {
         input.setDisable(true);
 
         input.setOnAction(event -> {
-            send(userName + input.getText() + "\n");
+            send(clientId + input.getText() + "\n");
             input.setText("");
             input.requestFocus();
         });
@@ -122,7 +122,7 @@ public class Problem2Client extends Application {
         sendButton.setDisable(true);
 
         sendButton.setOnAction(event -> {
-            send(userName + input.getText() + "\n");
+            send(clientId + input.getText() + "\n");
             input.setText("");
             input.requestFocus();
         });

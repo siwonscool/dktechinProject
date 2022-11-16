@@ -1,5 +1,7 @@
 package chatServer.domain;
 
+import chatServer.vo.Answer4Vo;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,4 +24,26 @@ public class WordsMapBasket {
         return randomWordsMap.get(key);
     }
 
+    public Answer4Vo findMatchingPrefix(String word){
+        int L = 0,R = 1;
+        Map<String,Integer> resultMap = new HashMap<>();
+        int[] resultArray = new int[MaxDataSize.MAX_DATA_SIZE.getValue() + 1];
+
+        while (L < word.length()){
+            String prefix = word.substring(L,R);
+            Integer idx = randomWordsMap.get(prefix);
+            if (idx != null){
+                resultMap.put(prefix,idx);
+                resultArray[idx + 1]++;
+                R++;
+            }else {
+                L++;
+                R = L + 1;
+            }
+        }
+
+        Answer4Vo answer4Vo = new Answer4Vo(resultMap,resultArray);
+
+        return answer4Vo;
+    }
 }

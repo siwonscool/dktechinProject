@@ -2,10 +2,12 @@ package chatServer.domain;
 
 import chatServer.ServerMain;
 
+import chatServer.vo.Answer4Vo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 public class Client {
@@ -31,7 +33,6 @@ public class Client {
         Runnable thread = new Runnable() {
             @Override
             public void run() {
-
                 try {
                     while (true){
                         stringForLog.setLength(0);
@@ -69,9 +70,9 @@ public class Client {
                                 stringForData.append("============================\n");
                                 stringForData.append("- 입력된 값\n");
                                 stringForData.append(data);
-                                stringForData.append("\n- 추출된 값\n");
+                                stringForData.append("\n\n- 추출된 값\n");
                                 stringForData.append(result);
-                                stringForData.append("\n- 소요시간\n ");
+                                stringForData.append("\n\n- 소요시간\n ");
                                 stringForData.append(diffTime);
                                 stringForData.append(" ms \n");
                                 send(String.valueOf(stringForData));
@@ -96,9 +97,9 @@ public class Client {
                                 stringForData.append("============================\n");
                                 stringForData.append("- 입력된 값\n");
                                 stringForData.append(data);
-                                stringForData.append("\n- 추출된 결과\n");
+                                stringForData.append("\n\n- 추출된 결과\n");
                                 stringForData.append(result);
-                                stringForData.append("\n- 소요시간\n");
+                                stringForData.append("\n\n- 소요시간\n");
                                 stringForData.append(diffTime);
                                 stringForData.append(" ms \n");
                                 send(String.valueOf(stringForData));
@@ -106,14 +107,46 @@ public class Client {
                         }
 
                         if (msg.contains("문제4")){
-                            float beforeTime = System.currentTimeMillis();
-                            float afterTime = System.currentTimeMillis();
-                            float diffTime = (afterTime - beforeTime)/1000;
+                            String data = msg.replace("문제4","");
+                            data = data.replace("\n","");
+                            if (!Pattern.matches("^[a-zA-Z]*$",data)){
+                                send("잘못된 문자열을 입력하였습니다. 영대소문자 가능)\n");
+                            }else {
+                                float beforeTime = System.currentTimeMillis();
+                                Answer4Vo answer4Vo = Singleton.getInstance().wordsMapBasket.findMatchingPrefix(data);
+                                float afterTime = System.currentTimeMillis();
+                                float diffTime = (afterTime - beforeTime);
+
+                                stringForData.append("============================\n");
+                                stringForData.append("- 입력된 값\n");
+                                stringForData.append(data);
+                                stringForData.append("\n\n- 추출된 결과\n");
+                                for (Entry<String,Integer> element : answer4Vo.getAnswer4Map().entrySet()){
+                                    stringForData.append(element.getKey());
+                                    stringForData.append(" -> ");
+                                    stringForData.append(element.getValue());
+                                }
+
+                                stringForData.append("\n\n");
+                                for (int i = 1; i < answer4Vo.getAnswer4Array().length; i++) {
+                                    if(answer4Vo.getAnswer4Array()[i] > 0){
+                                        stringForData.append(i);
+                                        stringForData.append(" : ");
+                                        stringForData.append(answer4Vo.getAnswer4Array()[i]);
+                                        stringForData.append("개");
+                                    }
+                                }
+                                stringForData.append("\n");
+                                send(String.valueOf(stringForData));
+                            }
                         }
                     }
                 }catch (Exception e){
                     try{
-                        System.out.println("메세지 수신오류 " + socket.getRemoteSocketAddress() + " : " + Thread.currentThread());
+                        stringForLog.append("메세지 수신오류 ");
+                        stringForLog.append(socket.getRemoteSocketAddress());
+                        stringForLog.append(Thread.currentThread());
+                        System.out.println(stringForLog);
                         ServerMain.clients.remove(Client.this);
                         socket.close();
                     }catch (Exception e2){
