@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ServerMain extends Application {
+public class ServerApplication extends Application {
     /*
      * ThreadPool 에서 Thread 를 관리하기 위해서 사용하는 ExecutorService 클래스
      * */

@@ -2,11 +2,11 @@ package chatServer.domain;
 
 import java.util.ArrayList;
 
-public class WordsListBasket {
+public class ResultListBasket {
 
     private final ArrayList<String>[] randomWordsList;
 
-    public WordsListBasket(ArrayList<String>[] randomWordsList) {
+    public ResultListBasket(ArrayList<String>[] randomWordsList) {
         this.randomWordsList = randomWordsList;
     }
 

@@ -1,6 +1,7 @@
 package chatServer.domain;
 
-import chatServer.ServerMain;
+import chatClient.ProblemType;
+import chatServer.ServerApplication;
 
 import chatServer.vo.Answer4Vo;
 import java.io.IOException;
@@ -56,89 +57,16 @@ public class Client {
 
                         String msg = new String(buffer,0,length,"UTF-8");
 
-                        if (msg.contains("문제2")){
-                            String data = msg.replace("문제2","");
-                            data = data.replace("\n","");
-                            if (!Pattern.matches("^[a-zA-Z]*$",data) || data.length() > 4){
-                                send("잘못된 문자열을 입력하였습니다. (4자리 이하 영대소문자 가능)\n");
-                            }else{
-                                long beforeTime = System.currentTimeMillis();
-                                int result = Singleton.getInstance().wordsMapBasket.findMatchingNumber(data);
-                                long afterTime = System.currentTimeMillis();
-                                long diffTime = (afterTime - beforeTime);
-
-                                stringForData.append("============================\n");
-                                stringForData.append("- 입력된 값\n");
-                                stringForData.append(data);
-                                stringForData.append("\n\n- 추출된 값\n");
-                                stringForData.append(result);
-                                stringForData.append("\n\n- 소요시간\n ");
-                                stringForData.append(diffTime);
-                                stringForData.append(" ms \n");
-                                send(String.valueOf(stringForData));
-                            }
+                        if (msg.contains(ProblemType.문제2.name())){
+                            solveProblem2(msg,stringForData);
                         }
 
-                        if (msg.contains("문제3")){
-                            String data = msg.replace("문제3","");
-                            data = data.replace("\n","");
-                            if (!Pattern.matches("^[0-9]*$",data)){
-                                send("잘못된 숫자를 입력하였습니다. (700만 이하 숫자 가능)\n");
-                            }else{
-                                int intData = Integer.parseInt(data);
-                                if (intData > MaxDataSize.MAX_DATA_SIZE.getValue()){
-                                    send("잘못된 숫자를 입력하였습니다. (700만 이하 숫자 가능)\n");
-                                }
-                                long beforeTime = System.currentTimeMillis();
-                                String result = Singleton.getInstance().wordsListBasket.findMatchingWords(intData);
-                                long afterTime = System.currentTimeMillis();
-                                long diffTime = (afterTime - beforeTime);
-
-                                stringForData.append("============================\n");
-                                stringForData.append("- 입력된 값\n");
-                                stringForData.append(data);
-                                stringForData.append("\n\n- 추출된 결과\n");
-                                stringForData.append(result);
-                                stringForData.append("\n\n- 소요시간\n");
-                                stringForData.append(diffTime);
-                                stringForData.append(" ms \n");
-                                send(String.valueOf(stringForData));
-                            }
+                        if (msg.contains(ProblemType.문제3.name())){
+                            solveProblem3(msg,stringForData);
                         }
 
-                        if (msg.contains("문제4")){
-                            String data = msg.replace("문제4","");
-                            data = data.replace("\n","");
-                            if (!Pattern.matches("^[a-zA-Z]*$",data)){
-                                send("잘못된 문자열을 입력하였습니다. 영대소문자 가능)\n");
-                            }else {
-                                float beforeTime = System.currentTimeMillis();
-                                Answer4Vo answer4Vo = Singleton.getInstance().wordsMapBasket.findMatchingPrefix(data);
-                                float afterTime = System.currentTimeMillis();
-                                float diffTime = (afterTime - beforeTime);
-
-                                stringForData.append("============================\n");
-                                stringForData.append("- 입력된 값\n");
-                                stringForData.append(data);
-                                stringForData.append("\n\n- 추출된 결과\n");
-                                for (Entry<String,Integer> element : answer4Vo.getAnswer4Map().entrySet()){
-                                    stringForData.append(element.getKey());
-                                    stringForData.append(" -> ");
-                                    stringForData.append(element.getValue());
-                                }
-
-                                stringForData.append("\n\n");
-                                for (int i = 1; i < answer4Vo.getAnswer4Array().length; i++) {
-                                    if(answer4Vo.getAnswer4Array()[i] > 0){
-                                        stringForData.append(i);
-                                        stringForData.append(" : ");
-                                        stringForData.append(answer4Vo.getAnswer4Array()[i]);
-                                        stringForData.append("개");
-                                    }
-                                }
-                                stringForData.append("\n");
-                                send(String.valueOf(stringForData));
-                            }
+                        if (msg.contains(ProblemType.문제4.name())){
+                            solveProblem4(msg,stringForData);
                         }
                     }
                 }catch (Exception e){
@@ -147,7 +75,7 @@ public class Client {
                         stringForLog.append(socket.getRemoteSocketAddress());
                         stringForLog.append(Thread.currentThread());
                         System.out.println(stringForLog);
-                        ServerMain.clients.remove(Client.this);
+                        ServerApplication.clients.remove(Client.this);
                         socket.close();
                     }catch (Exception e2){
                         e2.printStackTrace();
@@ -155,7 +83,7 @@ public class Client {
                 }
             }
         };
-        ServerMain.threadPool.submit(thread);
+        ServerApplication.threadPool.submit(thread);
     }
 
     /*
@@ -182,7 +110,7 @@ public class Client {
                 }catch (Exception e){
                     try{
                         System.out.println("메세지 송신 오류 " + socket.getRemoteSocketAddress() + " : " + Thread.currentThread());
-                        ServerMain.clients.remove(Client.this);
+                        ServerApplication.clients.remove(Client.this);
                         socket.close();
                     }catch (Exception e2){
                         e2.printStackTrace();
@@ -191,6 +119,93 @@ public class Client {
 
             }
         };
-        ServerMain.threadPool.submit(thread);
+        ServerApplication.threadPool.submit(thread);
+    }
+
+    private void solveProblem2(String msg, StringBuilder stringForData){
+        String data = msg.replace(ProblemType.문제2.name(),"");
+        data = data.replace("\n","");
+        if (!Pattern.matches("^[a-zA-Z]*$",data) || data.length() > 4 || data.equals("")){
+            send("잘못된 문자열을 입력하였습니다. (4자리 이하 영대소문자 가능)\n");
+        }else{
+            long beforeTime = System.currentTimeMillis();
+            int result = Singleton.getInstance().wordsMapBasket.findMatchingNumber(data);
+            long afterTime = System.currentTimeMillis();
+            long diffTime = (afterTime - beforeTime);
+
+            stringForData.append("============================\n");
+            stringForData.append("- 입력된 값\n");
+            stringForData.append(data);
+            stringForData.append("\n\n- 추출된 값\n");
+            stringForData.append(result);
+            stringForData.append("\n\n- 소요시간\n ");
+            stringForData.append(diffTime);
+            stringForData.append(" ms \n");
+            send(String.valueOf(stringForData));
+        }
+    }
+    private void solveProblem3(String msg, StringBuilder stringForData){
+        String data = msg.replace(ProblemType.문제3.name(),"");
+        data = data.replace("\n","");
+        if (!Pattern.matches("^[0-9]*$",data) || data.equals("")){
+            send("잘못된 숫자를 입력하였습니다. (700만 이하 숫자 가능)\n");
+        }else{
+            int intData = Integer.parseInt(data);
+            if (intData > MaxDataSize.MAX_DATA_SIZE.getValue()){
+                send("잘못된 숫자를 입력하였습니다. (700만 이하 숫자 가능)\n");
+            }
+            long beforeTime = System.currentTimeMillis();
+            String result = Singleton.getInstance().wordsListBasket.findMatchingWords(intData);
+            long afterTime = System.currentTimeMillis();
+            long diffTime = (afterTime - beforeTime);
+
+            stringForData.append("============================\n");
+            stringForData.append("- 입력된 값\n");
+            stringForData.append(data);
+            stringForData.append("\n\n- 추출된 결과\n");
+            stringForData.append(result);
+            stringForData.append("\n\n- 소요시간\n");
+            stringForData.append(diffTime);
+            stringForData.append(" ms \n");
+            send(String.valueOf(stringForData));
+        }
+    }
+    private void solveProblem4(String msg, StringBuilder stringForData){
+        String data = msg.replace(ProblemType.문제4.name(),"");
+        data = data.replace("\n","");
+        if (!Pattern.matches("^[a-zA-Z]*$",data) || data.equals("")){
+            send("잘못된 문자열을 입력하였습니다. 영대소문자 가능)\n");
+        }else {
+            long beforeTime = System.currentTimeMillis();
+            Answer4Vo answer4Vo = Singleton.getInstance().wordsMapBasket.findMatchingPrefix(data);
+            long afterTime = System.currentTimeMillis();
+            long diffTime = (afterTime - beforeTime);
+
+            stringForData.append("============================\n");
+            stringForData.append("- 입력된 값\n");
+            stringForData.append(data);
+            stringForData.append("\n\n- 추출된 결과\n");
+            for (Entry<String,Integer> element : answer4Vo.getAnswer4Map().entrySet()){
+                stringForData.append(element.getKey());
+                stringForData.append(" -> ");
+                stringForData.append(element.getValue());
+                stringForData.append("\n");
+            }
+
+            stringForData.append("\n");
+            for (int i = 1; i < answer4Vo.getAnswer4Array().length; i++) {
+                if(answer4Vo.getAnswer4Array()[i] > 0){
+                    stringForData.append(i);
+                    stringForData.append(" : ");
+                    stringForData.append(answer4Vo.getAnswer4Array()[i]);
+                    stringForData.append("개");
+                    stringForData.append("\n");
+                }
+            }
+            stringForData.append("\n- 소요시간\n");
+            stringForData.append(diffTime);
+            stringForData.append(" ms \n");
+            send(String.valueOf(stringForData));
+        }
     }
 }

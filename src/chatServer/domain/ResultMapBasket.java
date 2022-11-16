@@ -1,15 +1,14 @@
 package chatServer.domain;
 
 import chatServer.vo.Answer4Vo;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WordsMapBasket {
+public class ResultMapBasket {
 
     private final Map<String,Integer> randomWordsMap;
 
-    public WordsMapBasket(Map<String,Integer> wordsMap){
+    public ResultMapBasket(Map<String,Integer> wordsMap){
         validateWordsCount(wordsMap);
         this.randomWordsMap = wordsMap;
     }
@@ -25,6 +24,7 @@ public class WordsMapBasket {
     }
 
     public Answer4Vo findMatchingPrefix(String word){
+
         int L = 0,R = 1;
         Map<String,Integer> resultMap = new HashMap<>();
         int[] resultArray = new int[MaxDataSize.MAX_DATA_SIZE.getValue() + 1];
@@ -34,7 +34,14 @@ public class WordsMapBasket {
             Integer idx = randomWordsMap.get(prefix);
             if (idx != null){
                 resultMap.put(prefix,idx);
-                resultArray[idx + 1]++;
+                if (resultArray[idx] == 0){
+                    resultArray[idx]++;
+                }
+                if (R == word.length()){
+                    L++;
+                    R = L + 1;
+                    continue;
+                }
                 R++;
             }else {
                 L++;

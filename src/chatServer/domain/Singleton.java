@@ -9,8 +9,8 @@ public class Singleton {
     private final Random random = new Random();
 
     WordsBasket wordsBasket;
-    WordsMapBasket wordsMapBasket;
-    WordsListBasket wordsListBasket;
+    ResultMapBasket wordsMapBasket;
+    ResultListBasket wordsListBasket;
 
     private Map<String, Integer> randomWordsMap = new HashMap<>();
     private ArrayList<String>[] randomWordsList = new ArrayList[MaxDataSize.MAX_DATA_SIZE.getValue() + 1];
@@ -23,8 +23,8 @@ public class Singleton {
     public void shuffleWords() {
         permutationRepetition(0,4);
 
-        this.wordsMapBasket = new WordsMapBasket(randomWordsMap);
-        this.wordsListBasket = new WordsListBasket(randomWordsList);
+        this.wordsMapBasket = new ResultMapBasket(randomWordsMap);
+        this.wordsListBasket = new ResultListBasket(randomWordsList);
     }
 
     private static class LazyHolder{

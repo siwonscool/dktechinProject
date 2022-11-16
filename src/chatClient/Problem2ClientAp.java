@@ -15,12 +15,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class Problem4Client extends Application {
+public class Problem2ClientAp extends Application {
     Socket socket;
     TextArea textArea;
 
-    //문제4 Client 를 식별하기위한 문자열
-    String clientId = Clients.문제4.name();
+    //문제2 Client 를 식별하기위한 문자열
+    String clientId = ProblemType.문제2.name();
 
     public void startClient(String ip, int port){
         Thread thread = new Thread(){
@@ -157,7 +157,7 @@ public class Problem4Client extends Application {
 
         root.setBottom(pane);
         Scene scene = new Scene(root,400,400);
-        primaryStage.setTitle("문제 4 클라이언트");
+        primaryStage.setTitle("문제 2 클라이언트");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> stopClient());
         primaryStage.show();
