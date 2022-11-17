@@ -1,4 +1,4 @@
-package chatServer.domain;
+package chatServer.enumeration;
 
 public enum MaxDataSize {
     MAX_DATA_SIZE(7000000);
@@ -9,7 +9,7 @@ public enum MaxDataSize {
         this.value = value;
     }
 
-    public int getValue(){
+    public int getValue() {
         return value;
     }
 }

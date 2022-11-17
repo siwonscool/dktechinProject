@@ -10,12 +10,15 @@ public class ResultListBasket {
         this.randomWordsList = randomWordsList;
     }
 
-    public String findMatchingWords(int idx){
+    public String findMatchingWords(int idx) {
+        if (randomWordsList[idx].size() == 0) {
+            return "";
+        }
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < randomWordsList[idx].size(); i++) {
-            if (i != randomWordsList[idx].size() - 1){
-                result.append(randomWordsList[idx].get(i)+", ");
-            }else{
+            if (i != randomWordsList[idx].size() - 1) {
+                result.append(randomWordsList[idx].get(i) + ", ");
+            } else {
                 result.append(randomWordsList[idx].get(i));
             }
         }

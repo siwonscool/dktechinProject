@@ -3,7 +3,8 @@ package chatServer.vo;
 import java.util.Map;
 
 public class Answer4Vo {
-    private final Map<String,Integer> answer4Map;
+
+    private final Map<String, Integer> answer4Map;
     private final int[] answer4Array;
 
     public Answer4Vo(Map<String, Integer> answer4Map, int[] answer4List) {
